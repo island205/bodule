@@ -1,5 +1,5 @@
-var deepMerge 		= require('deepmerge')
-var _ 						= require('underscore')
+var deepMerge			= require('deepmerge')
+var _							= require('underscore')
 var uglifyParser	= require('uglify-js').parser
 
 var DEFAULT_OPTIONS = {
@@ -39,7 +39,7 @@ exports.bodule = function (code, options) {
          // Match ast like
          // `["call",["name","require"],[["string","${dep}"]]]]`
          if (item[0] === 'call' && item[1] && item[1][1] === 'require') {
-         		dep = item[2][0][1]
+						dep = item[2][0][1]
 						if (deps.indexOf(dep) === -1) {
 									deps.push(dep)
 						}	
