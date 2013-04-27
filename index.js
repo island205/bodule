@@ -59,6 +59,6 @@ exports.bodule = function (code, options) {
   wrapCode.push(
     '\n})'
   )
-  console.log(wrapCode.join(''))
+  return wrapCode.join('')
 }
 
