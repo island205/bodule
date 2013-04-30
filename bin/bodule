@@ -16,11 +16,33 @@ var src = program.args[0] || '.',
     dest = program.output || '.bodule',
     type = program.type || 'amd'
 
+function walk(dir, done) {
+    var results = []
+    fs.readdir(dir, function(err, list) {
+        if (err) return done(err)
+        var pending = list.length
+        if (!pending) return done(null, results)
+        list.forEach(function(file) {
+            file = dir + '/' + file
+            fs.stat(file, function(err, stat) {
+                if (stat && stat.isDirectory()) {
+                    walk(file, function(err, res) {
+                        results = results.concat(res)
+                        if (!--pending) done(null, results)
+                    })
+                } else {
+                    results.push(file)
+                    if (!--pending) done(null, results)
+                }
+            })
+        })
+    })
+}
 // Comile file in `filePath` to `dest`
 
 function wrapFile(filePath, type, dest) {
     var file, fileName
-    fileName = path.basename(src)
+    fileName = path.basename(filePath)
     file = fs.readFileSync(filePath, 'utf8')
     file = bodule(file, {
         type: type
@@ -30,10 +52,14 @@ function wrapFile(filePath, type, dest) {
 }
 
 function wrapDir(dirPath, type, dest) {
-    var files = fs.readdirSync(src)
-    files.forEach(function (file) {
-        wrapFile(src + file, type, dest)
-    }) 
+    walk(dirPath, function(err, files){
+        files =files.filter(function (file) {
+            return file.indexOf('.bodule') == -1 && file.indexOf('.js') > -1
+        })
+        files.forEach(function (file) {
+            wrapFile(path.normalize(src + '/' + file), type, dest)
+        }) 
+    })
 }
 
 if (!fs.existsSync(dest)) {
