@@ -1,4 +1,4 @@
-Bodule
+Bodule ['mɑdʒul]
 ======
 
 #### Welcome
