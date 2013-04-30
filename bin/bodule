@@ -1,10 +1,11 @@
 #!/usr/local/bin/node
 
 var program = require('commander'),
-    bodule = require('../').bodule,
-    fs = require('fs'),
-    watch = require('watch'),
-    path = require('path')
+    bodule  = require('../').bodule,
+    fs      = require('fs'),
+    watch   = require('watch'),
+    path    = require('path'),
+    mkdirp  = require('mkdirp')
 
 program
   .option('-t, --type [type]', 'special wrapper type, cmd or amd')
@@ -12,9 +13,20 @@ program
   .option('-w, --watch', 'watch file change, auto bodule')
   .parse(process.argv)
 
+// console.log('pwd:' + path.resolve('.'))
+
 var src = program.args[0] || '.',
     dest = program.output || '.bodule',
     type = program.type || 'amd'
+
+var package = require(path.resolve(src) + '/' + 'package.json')
+
+function mkdir(dir) {
+    if (!fs.existsSync(dir)) {
+        mkdirp.sync(dir)
+    }
+}
+
 
 function walk(dir, done) {
     var results = []
@@ -40,41 +52,44 @@ function walk(dir, done) {
 }
 // Comile file in `filePath` to `dest`
 
-function wrapFile(filePath, type, dest) {
-    var file, fileName
-    fileName = path.basename(filePath)
+function wrapFile(dirPath, filePath, type, dest) {
+    var file, fileName, destFilePath, destFileDirName
+    // console.log('start wrap file:' + filePath)
     file = fs.readFileSync(filePath, 'utf8')
     file = bodule(file, {
-        type: type
+        type: type,
+        name: filePath,
+        package: package
     })
-    fs.writeFileSync(dest + '/' +  fileName, file)
-    console.log(filePath + ' is wraped to ' + dest)
+    destFilePath = dest + path.resolve(filePath).replace(path.resolve(dirPath), '')
+    destFileDirName = path.dirname(destFilePath) 
+    mkdir(destFileDirName)
+    fs.writeFileSync(destFilePath, file)
+    // console.log(filePath + ' is wraped to ' + dest)
 }
 
 function wrapDir(dirPath, type, dest) {
     walk(dirPath, function(err, files){
         files =files.filter(function (file) {
-            return file.indexOf('.bodule') == -1 && file.indexOf('.js') > -1
+            return file.indexOf('.bodule') == -1 && /\.js$/.test(file)
         })
         files.forEach(function (file) {
-            wrapFile(path.normalize(src + '/' + file), type, dest)
+            wrapFile(dirPath, path.normalize(file), type, dest)
         }) 
     })
 }
 
-if (!fs.existsSync(dest)) {
-    fs.mkdirSync(dest)
-}
+mkdir(dest)
 
 if (program.watch) {
     if (fs.statSync(src).isDirectory()) {
         console.log(src + ' is watched!')
         watch.createMonitor(src, function (monitor) {
             monitor.on("created", function (f, stat) {
-                wrapFile(f, type, dest)
+                wrapFile(src, f, type, dest)
             })
             monitor.on("changed", function (f, curr, prev) {
-                wrapFile(f, type, dest)
+                wrapFile(src, f, type, dest)
             })
         })
     }
@@ -83,7 +98,7 @@ if (program.watch) {
 
 var files = []
 if (src.indexOf('.js') > -1) {
-    wrapFile(src, type, dest)
+    wrapFile('.', src, type, dest)
 } else {
     wrapDir(src, type, dest)
 } 

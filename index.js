@@ -51,9 +51,9 @@ exports.bodule = function (code, options) {
     deps.forEach(function (dep) {
         var module
         var REQUIRE_REG = new RegExp('require\\([\'\"]' + dep + '[\'\"]\\)', 'g')
-        console.log(REQUIRE_REG)
+        // console.log(REQUIRE_REG)
         if(dep.indexOf('./') > -1) {
-            module = package + dep
+            module = package + '/' + dep
             code = code.replace(REQUIRE_REG, 'require(\'' + module + '\')')
         } else {
             code = code.replace(REQUIRE_REG, 'require(\'' + dep + '@' + options.package.dependencies[dep] + '\')')
