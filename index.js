@@ -11,8 +11,7 @@ var DEFAULT_OPTIONS = {
     },
     'main': 'index.js'
   },
-  'type':'neuron'
-
+  'type':'amd'
 }
 
 function travelAst(ast, callback) {
@@ -47,18 +46,39 @@ exports.bodule = function (code, options) {
      }
   })
 
-  if (options.path !== './' + options.package.main) {
-    module = package + options.path
-  } else {
-    module = package
+  module = package + options.path
+  function cmdize(code) {
+    deps.forEach(function (dep) {
+        var module
+        var REQUIRE_REG = new RegExp('require\\([\'\"]' + dep + '[\'\"]\\)', 'g')
+        console.log(REQUIRE_REG)
+        if(dep.indexOf('./') > -1) {
+            module = package + dep
+            code = code.replace(REQUIRE_REG, 'require(\'' + module + '\')')
+        } else {
+            code = code.replace(REQUIRE_REG, 'require(\'' + dep + '@' + options.package.dependencies[dep] + '\')')
+        }
+    })
+    return code
   }
-  wrapCode.push(
-      'define(\'' + module + '\', [' + deps.map(function (dep) { return '\'' + dep + '@' + options.package.dependencies[dep]+ '\'' }).join(', ') + '], function (require, exports, module) {\n' 
-  )
-  wrapCode.push(code)
-  wrapCode.push(
-    '\n})'
-  )
+  if (options.type == 'amd') {
+    wrapCode.push(
+        'define(\'' + module + '\', [' + deps.map(function (dep) { return '\'' + dep + '@' + options.package.dependencies[dep]+ '\'' }).join(', ') + '], function (require, exports, module) {\n' 
+    )
+    wrapCode.push(code)
+    wrapCode.push(
+      '\n})'
+    )
+  } else {
+    wrapCode.push(
+        'define(function (require, exports, module) {\n' 
+    )
+    wrapCode.push(cmdize(code))
+    wrapCode.push(
+      '\n})'
+    )
+    
+  }
   return wrapCode.join('')
 }
 
