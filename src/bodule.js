@@ -1,6 +1,7 @@
-var uglifyParser = require('uglify-js').parser
-var travelAst = require('./util').travelAst
-var cmdize = require('./cmdize')
+var uglifyParser    = require('uglify-js').parser
+var _               = require('underscore')
+var travelAst       = require('./util').travelAst
+var cmdize          = require('./cmdize')
 
 module.exports = function(path, code, _package) {
 	var ast, deps = []
