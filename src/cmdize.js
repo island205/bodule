@@ -3,11 +3,11 @@
   module.exports = function(path, code, deps, _package) {
     var moduleId, packageId;
 
-    packageId = "" + _packege.name + "@" + _package.version;
-    moduleId = packegeId + path;
+    packageId = "" + _package.name + "@" + _package.version;
+    moduleId = packageId + path;
     deps = deps.map(function(dep) {
-      return ("'" + dep + "@" + _packege.dependencies[dep] + "'").join(', ');
-    });
+      return "'" + dep + "@" + _package.dependencies[dep] + "'";
+    }).join(', ');
     return "define('" + moduleId + "', [" + deps + "], function (require, exports, module) {\n    " + (code.split('\n').join('\n    ')) + "    \n})";
   };
 

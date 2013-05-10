@@ -5,7 +5,6 @@ var cmdize          = require('./cmdize')
 
 module.exports = function(path, code, _package) {
 	var ast, deps = []
-
 	ast = uglifyParser.parse(code)
 	travelAst(ast, function(ast) {
 		var dep
@@ -15,7 +14,7 @@ module.exports = function(path, code, _package) {
 			// `["call",["name","require"],[["string","${dep}"]]]]`
 
 			if (ast[0] === 'call' && ast[1] && ast[1][1] === 'require') {
-				dep = item[2][0][1]
+				dep = ast[2][0][1]
 				if (deps.indexOf(dep) === - 1) {
 					deps.push(dep)
 				}
