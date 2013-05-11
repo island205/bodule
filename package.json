@@ -5,6 +5,7 @@
   "main": "index.js",
   "repository": "git@github.com:Bodule/bodule.git",
   "author": "island205",
+  "email": "island205@gmail.com",
   "license": "MIT",
   "dependencies": {
     "underscore": "~1.4.4",
