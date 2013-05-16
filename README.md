@@ -1,11 +1,9 @@
-﻿Bodule ['bɑdʒul]
+Bodule ['bɑdʒul]
 ======
 
-Bodule是一个将Node包导入给浏览器端的解决方案，本repo是该方案的核心——将一个node模块cmd化。
+Bodule is a solution for port Node.js packages to brower. This is the core repo: **CMDZIE A NODE MODULE**.
 
-### API
-
-`bodule(path, code, pkg)`
+## Usage
 
 ```javascript
 var bodule = require('bodule')
@@ -29,7 +27,40 @@ define('yourPackageName@0.1.0/foo.js', ['underscore@1.4.4'], function (require, 
 */
 ```
 
-### 安装
+## API
+
+**`bodule(path, code, pkg, [options])`**
+
+### path
+
+The module path relative to the packege.
+
+### code
+
+The module code, Maybe read from a file.
+
+### pkg
+
+The package.json. The keys must have :
+
+1. name
+2. version
+3. dependencies
+
+### options
+
+optional.
+
+```javascript
+{
+	useStrict: true,
+	template: {
+		define: "NR.define"
+	}
+}
+```
+
+## Install
 
 ```bash
 npm install bodule
