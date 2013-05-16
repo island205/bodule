@@ -2,9 +2,13 @@ var uglifyParser    = require('uglify-js').parser
 var _               = require('underscore')
 var travelAst       = require('./util').travelAst
 var cmdize          = require('./cmdize')
+var options         = require('./options')
+var deepMerge       = require('deepmerge')
 
-module.exports = function(path, code, _package) {
+module.exports = function(path, code, pkg, opt) {
 	var ast, deps = []
+    opt = opt || {}
+    opt = deepMerge(options, opt)
 	ast = uglifyParser.parse(code)
 	travelAst(ast, function(ast) {
 		var dep
@@ -22,6 +26,6 @@ module.exports = function(path, code, _package) {
 		}
 	})
 
-	return cmdize(path, code, deps, _package)
+	return cmdize(path, code, deps, pkg, opt)
 }
 

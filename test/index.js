@@ -27,9 +27,13 @@ describe('wrapCode', function(){
                 'a': '0.0.1',
                 'xxxxx': '0.0.2'
             }
+        }, {
+            template: {
+                define: 'NR.define'          
+            }
         });
 
-        var expected = "define('bodule@0.1.0/b.js', ['a@0.0.1', 'xxxxx@0.0.2'], function (require, exports, module) {\n"
+        var expected = "NR.define('bodule@0.1.0/b.js', ['a@0.0.1', 'xxxxx@0.0.2'], function (require, exports, module) {\n"
                     +"    var a = require(\"a\"); require(\"xxxxx\")    \n"
                     +"})";
         assert.equal(wrapCode,expected);

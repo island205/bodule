@@ -1,13 +1,19 @@
-module.exports = (path, code, deps, _package) ->
-    packageId = "#{_package.name}@#{_package.version}" 
+module.exports = (path, code, deps, pkg, opt) ->
+    packageId = "#{pkg.name}@#{pkg.version}" 
     moduleId = packageId + path
 
+    useStrict = if opt.useStrict
+        "'use strict';"
+    else
+        ""
+
     deps = deps.map (dep) ->
-        "'#{dep}@#{_package.dependencies[dep]}'"
+        "'#{dep}@#{pkg.dependencies[dep]}'"
     .join(', ')
 
     """
-    define('#{moduleId}', [#{deps}], function (require, exports, module) {
+    #{opt.template.define}('#{moduleId}', [#{deps}], function (require, exports, module) {
+        #{useStrict}
         #{code.split('\n').join('\n    ')}    
     })
     """

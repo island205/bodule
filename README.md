@@ -1,4 +1,4 @@
-Bodule ['bɑdʒul]
+﻿Bodule ['bɑdʒul]
 ======
 
 Bodule是一个将Node包导入给浏览器端的解决方案，本repo是该方案的核心——将一个node模块cmd化。
