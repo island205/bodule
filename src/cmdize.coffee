@@ -8,7 +8,10 @@ module.exports = (path, code, deps, pkg, opt) ->
         ""
 
     deps = deps.map (dep) ->
-        "'#{dep}@#{pkg.dependencies[dep]}'"
+        if pkg.dependencies?
+            if pkg.dependencies[dep]?
+                dep = "#{dep}@#{pkg.dependencies[dep]}"
+        "'#{dep}'"
     .join(', ')
 
     """
