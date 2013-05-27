@@ -1,6 +1,7 @@
 module.exports = (path, code, deps, pkg, opt) ->
     packageId = "#{pkg.name}@#{pkg.version}" 
     moduleId = packageId + path
+    moduleId = moduleId.slice 0, -3
 
     useStrict = if opt.useStrict
         "'use strict';"

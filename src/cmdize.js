@@ -5,6 +5,7 @@
 
     packageId = "" + pkg.name + "@" + pkg.version;
     moduleId = packageId + path;
+    moduleId = moduleId.slice(0, -3);
     useStrict = opt.useStrict ? "'use strict';" : "";
     deps = deps.map(function(dep) {
       if (pkg.dependencies != null) {
