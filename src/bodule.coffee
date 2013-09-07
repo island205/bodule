@@ -42,6 +42,7 @@ module.exports = (path, code, pkg = {}, opt = {})->
   """
   #{opt.template.define}('#{moduleId}', [#{deps.join(', ')}], function (require, exports, module) {
     #{useStrict}
-    #{code.split('\n').join('\n    ')}    
+    # indent for readability
+    #{code.split('\n').join('\n    ')}
   })
   """
