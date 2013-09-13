@@ -35,8 +35,10 @@
     ast = U2.parse(code);
     ast.walk(walker);
     addVersion = function(id) {
-      if (typeof pkg.dependencies[id] !== 'undefined') {
-        id = "" + id + "@" + pkg.dependencies[id];
+      if (pkg.dependencies != null) {
+        if (typeof pkg.dependencies[id] !== 'undefined') {
+          id = "" + id + "@" + pkg.dependencies[id];
+        }
       }
       return id;
     };
@@ -70,7 +72,7 @@
     deps = deps.map(function(dep) {
       return "'" + dep + "'";
     });
-    return "" + opt.template.define + "('" + moduleId + "', [" + (deps.join(', ')) + "], function (require, exports, module) {\n  " + useStrict + "\n  # indent for readability\n  " + (code.split('\n').join('\n    ')) + "\n})";
+    return "" + opt.template.define + "('" + moduleId + "', [" + (deps.join(', ')) + "], function (require, exports, module) {\n  " + useStrict + "\n  " + (code.split('\n').join('\n    ')) + "\n})";
   };
 
 }).call(this);

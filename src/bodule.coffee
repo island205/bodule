@@ -22,8 +22,9 @@ module.exports = (path, code, pkg = {}, opt = {})->
   ast.walk walker
 
   addVersion = (id) ->
-    if typeof pkg.dependencies[id] isnt 'undefined'
-      id = "#{id}@#{pkg.dependencies[id]}"
+    if pkg.dependencies?
+      if typeof pkg.dependencies[id] isnt 'undefined'
+        id = "#{id}@#{pkg.dependencies[id]}"
     id
 
   # require('backbone') -> require('backbone@1.0.0')
@@ -57,7 +58,6 @@ module.exports = (path, code, pkg = {}, opt = {})->
   """
   #{opt.template.define}('#{moduleId}', [#{deps.join(', ')}], function (require, exports, module) {
     #{useStrict}
-    # indent for readability
     #{code.split('\n').join('\n    ')}
   })
   """
