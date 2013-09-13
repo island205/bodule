@@ -21,6 +21,21 @@ module.exports = (path, code, pkg = {}, opt = {})->
   ast = U2.parse code
   ast.walk walker
 
+  addVersion = (id) ->
+    if typeof pkg.dependencies[id] isnt 'undefined'
+      id = "#{id}@#{pkg.dependencies[id]}"
+    id
+
+  # require('backbone') -> require('backbone@1.0.0')
+  trans = new U2.TreeTransformer (node, descend)->
+    if node instanceof U2.AST_Call and node.expression.name is 'require' and node.args.length
+      node.args.forEach (arg)->
+        arg.value = addVersion arg.getValue()
+  ast = ast.transform trans
+  code = ast.print_to_string
+    beautify: true
+    comments: true
+
   packageId = "#{pkg.name}@#{pkg.version}"
   moduleId = packageId + path
   moduleId = moduleId.replace /\.js$/, ''
@@ -32,7 +47,7 @@ module.exports = (path, code, pkg = {}, opt = {})->
 
   if pkg.dependencies?
     deps = deps.map (dep)->
-      if pkg.dependencies[dep]?
+      if typeof pkg.dependencies[dep] isnt 'undefined'
         dep = "#{dep}@#{pkg.dependencies[dep]}"
       dep
 

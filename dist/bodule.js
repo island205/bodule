@@ -13,7 +13,7 @@
   };
 
   module.exports = function(path, code, pkg, opt) {
-    var ast, deps, moduleId, packageId, useStrict, walker;
+    var addVersion, ast, deps, moduleId, packageId, trans, useStrict, walker;
     if (pkg == null) {
       pkg = {};
     }
@@ -34,6 +34,24 @@
     });
     ast = U2.parse(code);
     ast.walk(walker);
+    addVersion = function(id) {
+      if (typeof pkg.dependencies[id] !== 'undefined') {
+        id = "" + id + "@" + pkg.dependencies[id];
+      }
+      return id;
+    };
+    trans = new U2.TreeTransformer(function(node, descend) {
+      if (node instanceof U2.AST_Call && node.expression.name === 'require' && node.args.length) {
+        return node.args.forEach(function(arg) {
+          return arg.value = addVersion(arg.getValue());
+        });
+      }
+    });
+    ast = ast.transform(trans);
+    code = ast.print_to_string({
+      beautify: true,
+      comments: true
+    });
     packageId = "" + pkg.name + "@" + pkg.version;
     moduleId = packageId + path;
     moduleId = moduleId.replace(/\.js$/, '');
@@ -43,7 +61,7 @@
     }
     if (pkg.dependencies != null) {
       deps = deps.map(function(dep) {
-        if (pkg.dependencies[dep] != null) {
+        if (typeof pkg.dependencies[dep] !== 'undefined') {
           dep = "" + dep + "@" + pkg.dependencies[dep];
         }
         return dep;
